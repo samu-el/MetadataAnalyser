@@ -16,3 +16,8 @@ uritemplate
 yarl
 pymongo
 maclookup
+pillow
+bs4
+pypdf2
+exifread
+python-docx
