@@ -8,7 +8,8 @@ from PyPDF2 import PdfFileReader
 import exifread
 import docx
 import pprint
-
+import filetype
+# from file_metadata.generic_file import GenericFile
 #https://github.com/atdsaa/file-metadata with few modifications to  utilities.py
 from file_metadata.generic_file import GenericFile
 
@@ -19,7 +20,12 @@ def get_generic_file_info(path):
 	gf = GenericFile.create(path)
 	return gf.analyze()
 
-
+def get_file_type(path):
+	kind = filetype.guess(path)
+	if kind is None:
+		print('Cannot guess file type!')
+		return
+	return kind.extension
 
 
 def get_docx_info(path):
