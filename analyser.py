@@ -7,15 +7,20 @@ import sys
 from PyPDF2 import PdfFileReader
 import exifread
 import docx
+import filetype
 # from file_metadata.generic_file import GenericFile
-
 
 
 # def get_generic_file_info(path):
 # 	gf = GenericFile.create(path)
 # 	gf.analyse()
 
-
+def get_file_type(path):
+	kind = filetype.guess(path)
+	if kind is None:
+		print('Cannot guess file type!')
+		return
+	return kind.extension
 
 
 def get_docx_info(path):
