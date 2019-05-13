@@ -22,3 +22,4 @@ pypdf2
 exifread
 python-docx
 filetype
+file_metadata
