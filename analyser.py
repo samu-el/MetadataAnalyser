@@ -8,7 +8,6 @@ from PyPDF2 import PdfFileReader
 import exifread
 import docx
 import pprint
-import filetype
 # from file_metadata.generic_file import GenericFile
 #https://github.com/atdsaa/file-metadata with few modifications to  utilities.py
 from file_metadata.generic_file import GenericFile
@@ -20,12 +19,12 @@ def get_generic_file_info(path):
 	gf = GenericFile.create(path)
 	return gf.analyze()
 
-def get_file_type(path):
-	kind = filetype.guess(path)
-	if kind is None:
-		print('Cannot guess file type!')
-		return
-	return kind.extension
+# def get_file_type(path):
+# 	kind = filetype.guess(path)
+# 	if kind is None:
+# 		print('Cannot guess file type!')
+# 		return
+# 	return kind.extension
 
 
 def get_docx_info(path):
@@ -51,26 +50,44 @@ def get_docx_info(path):
 	return info
 
 def get_image_info(path):
-	with open(path, 'rb') as f:
-		tags = exifread.process_file(f)	
-		for tag in tags.keys():
-			if tag not in ('JPEGThumbnail', 'TIFFThumbnail', 'Filename', 'EXIF MakerNote'):
-				print("%s: %s" % (tag, tags[tag]))
+	print(path)
+	f = open(path, 'rb') 
+	tags = exifread.process_file(f)	
+	for tag in tags.keys():
+		if tag not in ('JPEGThumbnail', 'TIFFThumbnail', 'Filename', 'EXIF MakerNote'):
+			print("%s: %s" % (tag, tags[tag]))
+
 	return tags
 
  
 def get_pdf_info(path):
-    with open(path, 'rb') as f:
-        pdf = PdfFileReader(f)
-        info = pdf.getDocumentInfo()
-        info['number_of_pages'] = pdf.getNumPages()
-	   	
-    return info
+	with open(path, 'rb') as f:
+		pdf = PdfFileReader(f)
+		info = pdf.getDocumentInfo()
+		info['number_of_pages'] = pdf.getNumPages()
+	return info
+
+def main():
+	if len(sys.argv) < 3:
+		print('USAGE: python analaser.py [-i/-p/-d/-g] [filepath]')
+		print(' -i: image \n -p: pdf \n -d: docx\n -g: any generic file')
+		return
+	ftype = sys.argv[1]
+	path = sys.argv[2]
+	if ftype.lower() =='-g':
+		info = get_generic_file_info(path)
+	elif ftype.lower() == '-i':
+		info = get_image_info(path)
+	elif ftype.lower() == '-p':
+		info = get_pdf_info(path)
+	elif ftype.lower() == '-d':
+		info = get_docx_info(path)
+	pprint.pprint(info)
+	if ftype != '-g':
+		more_info = get_generic_file_info(path)
+		print('More Data');
+		pprint.pprint(more_info)
 
 if __name__ == '__main__':
-    path = sys.argv[1]
-    # get_pdf_info(path)
-    # get_image_info(path)
-    # get_docx_info(path)
-    info = get_generic_file_info(path)
-    pprint.pprint(info)
+	
+	main()

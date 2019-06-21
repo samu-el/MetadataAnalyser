@@ -50,31 +50,31 @@ def handle(msg):
         bot.sendChatAction(person_id, "typing")
         log(msg)
         userMsg.insert_one(msg)
-        if text and text.startswith('/mac'):
+        if text and text.lower().startswith('/mac'):
             address = text.strip().split(' ')[-1].strip()
             info = mac_client.get_raw_data(address, 'json')
             print (type(info))
             info = format_results(info)
             bot.sendMessage(
-                person_id, "`"+info+"`", parse_mode='markdown')
+                person_id, "`"+str(info)+"`", parse_mode='markdown')
         elif content_type == 'document':
             file_id = msg['document']['file_id']
             file_name = msg['document']['file_name']
-            bot.download_file(file_id, file_name)
-            info = analyser.get_generic_file_info('./'+file_name)
+            bot.download_file(file_id, './files/'+file_name)
+            info = analyser.get_generic_file_info('./files/'+file_name)
             info = format_results(info)
             bot.sendMessage(
                 person_id, "`"+str(info)+"`", parse_mode='markdown')
         elif content_type == 'photo':
             file_id = msg['photo'][-1]['file_id']
             file_name = msg['photo'][-1]['file_id']
-            bot.download_file(file_id, file_name)
-            info = analyser.get_generic_file_info('./'+file_name)
+            bot.download_file(file_id, './files/'+file_name)
+            info = analyser.get_generic_file_info('./files/'+file_name)
             info = format_results(info)
             bot.sendMessage(
-                person_id, "`"+info+"`", parse_mode='markdown')
+                person_id, "`"+str(info)+"`", parse_mode='markdown')
         else:            
-            info = "Please Choose one of the commands"
+            info = "Please Choose one of the commands: /mac [mac addres] or upload file for metadata extraction"
             bot.sendMessage(person_id, info)
             botResponse.insert_one(
                 {"person_id:": person_id, "info": str(info)})
@@ -90,15 +90,16 @@ def get_results(response):
     pass
 
 def format_results(result):
-    # Casting to JSON 
-    if(type(result) == dict):
-        str_json = json.dumps(result)
-        decoded_json = json.loads(str_json)
-    elif (type(result) == bytes ):
-        decoded_json = json.loads(result.decode('utf8').replace("'", '"'))
+    # # Casting to JSON 
+    # if(type(result) == dict):
+    #     str_json = json.dumps(result)
+    #     decoded_json = json.loads(str_json)
+    # elif (type(result) == bytes ):
+    #     decoded_json = json.loads(result.decode('utf8').replace("'", '"'))
 
-    # Pretty Print the JSON
-    ret = json.dumps(decoded_json, indent=2, sort_keys=True)
+    # # Pretty Print the JSON
+    # ret = json.dumps(decoded_json, indent=2, sort_keys=True)
+    ret = result
     return ret
 
 
